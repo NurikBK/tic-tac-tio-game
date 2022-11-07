@@ -3,29 +3,58 @@ import Board from './Board';
 import { calculateWinner } from '../gameLogic';
 
 function Game() {
-  const [board, setBoard] = useState(Array(9).fill(null));
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [stepNumber, setStepNumber] = useState(0);
   const [xIsNext, setXisNext] = useState(true);
 
-  const winner = calculateWinner(board);
+  const winner = calculateWinner(history[stepNumber]);
+
+  const style = {
+    width: '200px',
+    margin: '20px auto',
+  };
 
   function onClick(i) {
-    const boardCopy = [...board];
+    const timeInHistory = history.slice(0, stepNumber + 1);
+    const current = timeInHistory[stepNumber];
+    const squares = [...current];
     //if user click square is occupied or game is over, return
-    if (winner || board[i]) return;
+    if (winner || squares[i]) return;
 
     // show X or O
-    boardCopy[i] = xIsNext ? 'X' : 'O';
-    setBoard(boardCopy);
+    squares[i] = xIsNext ? 'X' : 'O';
+    setHistory([...timeInHistory, squares]);
+    setStepNumber(timeInHistory.length);
     setXisNext(!xIsNext);
   }
 
-  function jumpTo() {}
+  function jumpTo(step) {
+    stepNumber(step);
+    setXisNext(step % 2 === 0);
+  }
 
-  function renderMoves() {}
+  function renderMoves() {
+    history.map((step, move) => {
+      const destination = move ? `Go to Move ${move}` : 'Go To Start';
+      return (
+        <li key={move}>
+          <button onClick={() => jumpTo(move)}>{destination}</button>
+        </li>
+      );
+    });
+  }
   return (
-    <div>
-      <Board squares={board} onClick={onClick} />
-    </div>
+    <>
+      <Board squares={history[stepNumber]} onClick={onClick} />
+      <div style={style}>
+        <p>
+          {winner
+            ? 'Winner is:' + winner
+            : 'Next Player is' + (xIsNext ? ' X' : ' O')}
+        </p>
+        {renderMoves()}
+      </div>
+    </>
   );
 }
 
