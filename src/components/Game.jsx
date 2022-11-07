@@ -29,13 +29,13 @@ function Game() {
   }
 
   function jumpTo(step) {
-    stepNumber(step);
+    setStepNumber(step);
     setXisNext(step % 2 === 0);
   }
 
   function renderMoves() {
-    history.map((step, move) => {
-      const destination = move ? `Go to Move ${move}` : 'Go To Start';
+    return history.map((step, move) => {
+      const destination = move ? `Go to move#${move}` : 'Go To Start';
       return (
         <li key={move}>
           <button onClick={() => jumpTo(move)}>{destination}</button>
